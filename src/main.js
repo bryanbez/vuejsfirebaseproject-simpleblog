@@ -11,6 +11,8 @@ import Editor from 'v-markdown-editor'
 import ViewBlogContent from './components/pages/ViewBlogContent'
 import Homepage from './components/pages/Homepage'
 import NewBlog from './components/layouts/NewBlog'
+import ManageBlogs from './components/pages/ManageBlogs';
+import EditBlogs from './components/layouts/EditBlog';
 
 Vue.use(VueResource);
 Vue.use(VueRouter);
@@ -21,7 +23,9 @@ const router = new VueRouter({
   routes: [
     { path: '/', component: Homepage },
     { path: '/view-content/:blog_id', name:'viewblog', component: ViewBlogContent },
-    { path: '/addblog', component: NewBlog }
+    { path: '/addblog', component: NewBlog },
+    { path: '/manageblogs', component: ManageBlogs },
+    { path: '/editblog/:blog_id', name: 'editblog', component: EditBlogs }
   ]
 });
 

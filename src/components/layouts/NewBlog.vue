@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row pb-3 pt-3">
             <h3>Add Blog Post</h3>
-           
+
         </div>
         <form @submit.prevent="addBlogPost">
             <div class="row pb-3">
@@ -19,7 +19,7 @@
               <div class="row pb-3">
                 <label for="">Featured Image</label>
                 <input type="file" class="form-control" multiple accept="image/jpg,image/jpeg,/image/png" v-on:change="uploadFeaturedImage">
-                 
+
                  <div class="image-preview" v-if="featuredImage.length > 0">
                     <label for="">Preview Image</label>
                     <img class="preview" :src="featuredImage">
@@ -30,7 +30,7 @@
               <button class="btn btn-secondary" v-on:change="uploadFeaturedImage">Back</button>
             </div>
         </form>
-    
+
     </div>
 </template>
 
@@ -61,20 +61,20 @@ export default {
             if(fileInput.files && fileInput.files[0]) {
                 var readerImg = new FileReader();
                 readerImg.onload = (e) => {
-                    this.featuredImage = e.target.result;    
+                    this.featuredImage = e.target.result;
                     this.uploadFile = event.target.files[0];
                 }
                 readerImg.readAsDataURL(fileInput.files[0]);
             }
-        
+
         },
-        addBlogPost(event) {
+        addBlogPost() {
 
             var storageRef = firebasePlugin.storage().ref('blog_feature_image/'+this.fileName);
                 storageRef.put(this.uploadFile).then(function(snapshot) {
                     console.log('Uploaded a blob or file!');
-                }); 
-            
+                });
+
             firebasePlugin.firestore().collection('blog_content').add({
                 blog_id: Math.floor(Math.random() * 100000),
                 title: this.title,
@@ -84,14 +84,12 @@ export default {
                 updated_at: ''
             }).then(docRef => this.$router.push('/'))
               .catch(insertError => console.log(insertError));
-            
-         
         }
     },
     components: {
         VueSimplemde
     },
- 
+
 }
 </script>
 

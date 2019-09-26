@@ -9,29 +9,35 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a href="" class="nav-link active">Home</a>
+                            <a href="" class="nav-link active"><router-link to="/">Home</router-link></a>
                         </li>
                         <li class="nav-item">
-                            <a href="" class="nav-link">Blogs</a>
+                            <a href="" class="nav-link"><router-link to="/addblog">Add Blogs</router-link></a>
                         </li>
                         <li class="nav-item">
-                            <a href="" class="nav-link">Downloads</a>
+                            <a href="" class="nav-link"><router-link to="/manageblogs">Manage Blogs</router-link></a>
                         </li>
-                      
+
+
                     </ul>
                 </div>
             </div>
         </nav>
-   
+
     </div>
 </template>
 
 <script>
 export default {
-    
+
 }
 </script>
 
 <style scoped>
-
+a {
+  color: white;
+}
+.router-link-exact-active {
+  font-weight: bold;
+}
 </style>
