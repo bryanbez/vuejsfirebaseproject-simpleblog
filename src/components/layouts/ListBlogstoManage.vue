@@ -5,7 +5,7 @@
         <div class="card mb-4" v-for="blog in blogs" v-bind:key="blog.id">
           <div class="row no-gutters">
               <div class="col-md-3">
-                  <img class="card-img img-fluid" v-bind:src="blog.imageLink.i" >
+                  <img class="card-img img-fluid" v-bind:src="blog.imageLink.i" > <!-- Wag burahin yung .i sa image yan -->
               </div>
               <div class="col-md-9">
                   <div class="card-body">
@@ -14,17 +14,12 @@
                       <p class="card-text"> {{ blog.content | cut-paragraph }} </p>
                       <p class="card-text"><small class="text-muted">Created: {{ blog.created_at }}</small></p>
 
-                  <router-link class="badge badge-primary mr-3" v-bind:to="{
-                         name: 'viewblog',
-                         params: { blog_id: blog.blog_id }
-                     }">Read More...</router-link>
-
                      <router-link class="badge badge-secondary mr-3" v-bind:to="{
                          name: 'editblog',
                          params: { blog_id: blog.blog_id }
                      }">Edit Blog</router-link>
 
-                     <span class="badge badge-danger mr-3">Delete Blog</span>
+                     <span @click="deleteBlog(blog.blog_id)" class="badge badge-danger mr-3"> Delete Blog </span>
 
                   </div>
               </div>
@@ -45,7 +40,7 @@ export default {
         }
     },
     created() {
-        firebasePlugin.firestore().collection('blog_content').get().then(querySnaphot => {
+        firebasePlugin.firestore().collection('blog_content').orderBy('updated_at').get().then(querySnaphot => {
             querySnaphot.forEach(doc => {
 
                 const data = {
@@ -65,6 +60,19 @@ export default {
 
         });
     },
+    methods: {
+      deleteBlog(blog_id) {
+        firebasePlugin.firestore().collection('blog_content').where('blog_id', '==', blog_id).get()
+        .then(querySnaphot => {
+          querySnaphot.forEach(doc => {
+            doc.ref.delete();
+            alert('Blog Deleted')
+            this.$router.push('/')
+          })
+        })
+      }
+    },
+
     filters: {
         'cut-paragraph': function(value) {
             return (value.substring(0,200) + "...");
@@ -82,5 +90,9 @@ export default {
 hr {
     padding-bottom: 10em;
 }
+span {
+  cursor: pointer;
+}
+
 
 </style>

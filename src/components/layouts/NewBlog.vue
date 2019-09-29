@@ -82,7 +82,7 @@ export default {
                 created_at: this.fullDate,
                 image_full: this.fileName,
                 updated_at: ''
-            }).then(docRef => this.$router.push('/'))
+            }).then(docRef => this.$router.push('/manageblogs'))
               .catch(insertError => console.log(insertError));
         }
     },

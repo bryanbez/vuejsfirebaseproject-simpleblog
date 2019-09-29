@@ -4,7 +4,7 @@
           <h3>Edit Blog Post</h3>
 
       </div>
-      <form @submit.prevent="addBlogPost">
+      <form @submit.prevent="updateBlogPost">
           <div class="row pb-3">
               <label for="">Blog Title</label>
               <input type="text" class="form-control" v-model="title">
@@ -18,7 +18,7 @@
           </div>
             <div class="row pb-3">
               <label for="">Featured Image</label>
-              <input type="file" class="form-control" multiple accept="image/jpg,image/jpeg,/image/png" v-on:change="uploadFeaturedImage">
+              <input type="file" id="featuredImage" class="form-control" multiple accept="image/jpg,image/jpeg,/image/png" v-on:change="uploadFeaturedImage">
 
                <div class="image-preview" v-if="featuredImage.length > 0">
                   <label for="">Preview Image</label>
@@ -26,11 +26,12 @@
               </div>
           </div>
           <div class="row pb-3 pt-3">
-            <button type="submit" class="btn btn-primary mr-3">Add Blog</button>
+            <button type="submit" class="btn btn-primary mr-3">Update Blog</button>
             <button class="btn btn-secondary">Back</button>
           </div>
       </form>
 
+      <div class="mt-5"></div>
   </div>
 </template>
 
@@ -48,7 +49,7 @@ export default {
             content: '',
             featuredImage: '',
             image_full: '',
-            imageLink: ''
+            fileName: '',
             updateDate: new Date().toJSON().slice(0,10).replace(/-/g,'-')
         }
     },
@@ -62,6 +63,7 @@ export default {
                     vm.content = doc.data().content,
                     vm.created_at = doc.data().created_at,
                     vm.image_full = doc.data().image_full
+                    vm.file
 
                     firebasePlugin.storage().ref().child('blog_feature_image/'+doc.data().image_full).getDownloadURL().then(function(url) {
                         vm.imageLink = url;
@@ -142,20 +144,41 @@ export default {
          },
          updateBlogPost() {
 
+           if(document.getElementById('featuredImage').files.length == 0) {
+             firebasePlugin.firestore().collection('blog_content').where('blog_id', '==', this.$route.params.blog_id).get()
+             .then(querySnapshot => {
+                 querySnapshot.forEach(doc => {
+                   doc.ref.update({
+                     title: this.title,
+                     content: this.content,
+                     updated_at: this.updateDate,
+                   }).then(() => {
+                     this.$router.push({ name: 'viewblog', params: {blog_id: this.blog_id}})
+                   });
+                 })
+             })
+           }
+           else {
              var storageRef = firebasePlugin.storage().ref('blog_feature_image/'+this.fileName);
                  storageRef.put(this.uploadFile).then(function(snapshot) {
                      console.log('Uploaded a blob or file!');
                  });
 
-             firebasePlugin.firestore().collection('blog_content').add({
-                 title: this.title,
-                 content: this.content,
-                 created_at: this.fullDate,
-                 image_full: this.fileName,
-                 updated_at: ''
-             }).then(docRef => this.$router.push('/'))
-               .catch(insertError => console.log(insertError));
-         }
+                   firebasePlugin.firestore().collection('blog_content').where('blog_id', '==', this.$route.params.blog_id).get()
+                   .then(querySnapshot => {
+                       querySnapshot.forEach(doc => {
+                         doc.ref.update({
+                           title: this.title,
+                           content: this.content,
+                           updated_at: this.updateDate,
+                           image_full: this.fileName
+                         }).then(() => {
+                            this.$router.push('/manageblogs')
+                         });
+                       })
+                   })
+           }
+         },
          backToHomepage() {
              return this.$router.push('/');
          }
